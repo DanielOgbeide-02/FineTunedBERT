@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 def download_model():
-    url = "https://drive.google.com/uc?export=download&id=14DI4ypySpV2nyKmlUv6Roj6Uo6HAcs8j"
+    url = "https://drive.google.com/uc?export=download&id=YOUR_NEW_FILE_ID"
     output_path = "saved_model.zip"
 
     if not os.path.exists("saved_model"):  # Avoid re-downloading
@@ -22,12 +22,20 @@ def extract_model():
         zip_ref.extractall("saved_model")
     print("Model extracted.")
 
-# Download model before loading it
+# Download and extract the model before loading it
 download_model()
 
-# Load model and tokenizer
-model_path = os.getenv("MODEL_PATH", "saved_model")
+# Ensure model is loaded from the correct path
+model_path = "saved_model"
 
+# Check if the model path contains a subfolder after extraction
+possible_subfolders = [f.path for f in os.scandir(model_path) if f.is_dir()]
+if possible_subfolders:
+    model_path = possible_subfolders[0]  # Use the first subfolder
+
+print(f"Loading model from: {model_path}")
+
+# Load model and tokenizer
 model = AutoModelForSequenceClassification.from_pretrained(model_path)
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 
@@ -59,6 +67,5 @@ def predict():
     return jsonify({"complaint": complaint_text, "urgency": urgency})
 
 if __name__ == "__main__":
-    print(f"Loading model from: {model_path}")
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
