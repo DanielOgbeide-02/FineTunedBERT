@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 def download_model():
-    url = "https://drive.google.com/uc?export=download&id=YOUR_NEW_FILE_ID"
+    url = "https://drive.google.com/uc?export=download&id=1kQMzAoxTw038szO9q0hmpOW2ZFzFhcGF"
     output_path = "saved_model.zip"
 
     if not os.path.exists("saved_model"):  # Avoid re-downloading
